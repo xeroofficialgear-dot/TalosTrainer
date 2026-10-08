@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Talos Training Tracker</title>
+
+<style>
+:root {
+    --bg: #08090c;
+    --card: #101218;
+    --card2: #151821;
+    --border: #252a34;
+    --text: #f3f4f6;
+    --muted: #8c93a1;
+    --green: #70e7a0;
+    --red: #ff6868;
+    --yellow: #f3c969;
+    --white: #ffffff;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+        radial-gradient(
+            circle at 50% -10%,
+            rgba(255,255,255,.06),
+            transparent 42%
+        ),
+        var(--bg);
+    color: var(--text);
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+}
+
+.app {
+    width: min(1400px, calc(100% - 40px));
+    margin: auto;
+    padding: 32px 0 24px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+}
+
+.eyebrow,
+.label {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .13em;
+}
+
+h1 {
+    margin: 5px 0 2px;
+    font-size: 34px;
+    letter-spacing: -.045em;
+}
+
+h2 {
+    margin: 5px 0 0;
+    font-size: 19px;
+    letter-spacing: -.025em;
+}
+
+.subtitle {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--card);
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--yellow);
+}
+
+.status.live .status-dot {
+    background: var(--green);
+    box-shadow: 0 0 12px rgba(112,231,160,.7);
+}
+
+.status.error .status-dot {
+    background: var(--red);
+    box-shadow: 0 0 12px rgba(255,104,104,.7);
+}
+
+/* Progress */
+
+.hero,
+.card,
+.panel {
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--card);
+}
+
+.hero {
+    padding: 25px;
+    margin-bottom: 14px;
+}
+
+.hero-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.progress-numbers {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+    margin-top: 7px;
+    font-size: 31px;
+    font-weight: 700;
+    letter-spacing: -.04em;
+}
+
+.muted {
+    color: var(--muted);
+}
+
+.percent {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.progress-track {
+    height: 8px;
+    margin-top: 22px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--card2);
+}
+
+.progress-fill {
+    width: 0%;
+    height: 100%;
+    background: white;
+    transition: width .5s ease;
+}
+
+.progress-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+/* Stats */
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.card {
+    padding: 18px;
+}
+
+.value {
+    margin-top: 8px;
+    font-size: 25px;
+    font-weight: 700;
+    letter-spacing: -.04em;
+}
+
+.value.small {
+    font-size: 18px;
+}
+
+.secondary {
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+/* Panels */
+
+.panel {
+    padding: 22px;
+    margin-bottom: 14px;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 18px;
+}
+
+.graph-count {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.chart {
+    height: 410px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(0,0,0,.16);
+}
+
+svg {
+    width: 100%;
+    height: 100%;
+}
+
+.grid-line {
+    stroke: rgba(255,255,255,.07);
+    stroke-width: 1;
+}
+
+.loss-line {
+    fill: none;
+    stroke: white;
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+}
+
+.loss-point {
+    fill: var(--bg);
+    stroke: white;
+    stroke-width: 2;
+    vector-effect: non-scaling-stroke;
+}
+
+.axis-label {
+    fill: var(--muted);
+    font-size: 12px;
+}
+
+/* Info */
+
+.columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.info {
+    margin-top: 18px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+}
+
+.info-row:last-child {
+    border-bottom: 0;
+}
+
+.info-row span {
+    color: var(--muted);
+}
+
+.info-row strong {
+    text-align: right;
+}
+
+footer {
+    display: flex;
+    justify-content: space-between;
+    color: var(--muted);
+    font-size: 11px;
+    padding: 12px 2px;
+}
+
+/* Mobile */
+
+@media (max-width: 900px) {
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .columns {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .app {
+        width: calc(100% - 24px);
+        padding-top: 18px;
+    }
+
+    header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .hero-top {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+    .chart {
+        height: 300px;
+    }
+
+    footer {
+        flex-direction: column;
+        gap: 6px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+    <div>
+        <div class="eyebrow">PROMETHEAN STUDIOS</div>
+        <h1>Talos Training</h1>
+        <div class="subtitle">Live training telemetry</div>
+    </div>
+
+    <div class="status" id="status">
+        <span class="status-dot"></span>
+        <span id="statusText">Connecting</span>
+    </div>
+</header>
+
+
+<!-- Progress -->
+
+<section class="hero">
+
+    <div class="hero-top">
+
+        <div>
+            <div class="label">TOKEN PROGRESS</div>
+
+            <div class="progress-numbers">
+                <span id="tokens">0</span>
+                <span class="muted">/</span>
+                <span id="target">0</span>
+            </div>
+        </div>
+
+        <div class="percent" id="percent">
+            0.00%
+        </div>
+
+    </div>
+
+    <div class="progress-track">
+        <div class="progress-fill" id="progress"></div>
+    </div>
+
+    <div class="progress-footer">
+        <span id="remaining">0 tokens remaining</span>
+        <span id="eta">ETA unavailable</span>
+    </div>
+
+</section>
+
+
+<!-- Statistics -->
+
+<section class="stats">
+
+    <div class="card">
+        <div class="label">STEP</div>
+        <div class="value" id="step">--</div>
+        <div class="secondary" id="stepTarget">--</div>
+    </div>
+
+    <div class="card">
+        <div class="label">TOKENS / SEC</div>
+        <div class="value" id="tps">--</div>
+        <div class="secondary">current throughput</div>
+    </div>
+
+    <div class="card">
+        <div class="label">ELAPSED</div>
+        <div class="value" id="elapsed">--</div>
+        <div class="secondary">training time</div>
+    </div>
+
+    <div class="card">
+        <div class="label">ETA</div>
+        <div class="value" id="etaCard">--</div>
+        <div class="secondary">estimated completion</div>
+    </div>
+
+    <div class="card">
+        <div class="label">TRAIN LOSS</div>
+        <div class="value" id="trainLoss">--</div>
+        <div class="secondary">latest checkpoint</div>
+    </div>
+
+    <div class="card">
+        <div class="label">VAL LOSS</div>
+        <div class="value" id="valLoss">--</div>
+        <div class="secondary">latest checkpoint</div>
+    </div>
+
+    <div class="card">
+        <div class="label">CHECKPOINT</div>
+        <div class="value small" id="checkpoint">--</div>
+        <div class="secondary" id="checkpointAge">--</div>
+    </div>
+
+    <div class="card">
+        <div class="label">GPU</div>
+        <div class="value small" id="gpu">--</div>
+        <div class="secondary" id="vram">--</div>
+    </div>
+
+</section>
+
+
+<!-- Loss graph -->
+
+<section class="panel">
+
+    <div class="panel-header">
+
+        <div>
+            <div class="label">TRAINING LOSS</div>
+            <h2>Checkpoint history</h2>
+        </div>
+
+        <div class="graph-count" id="graphCount">
+            0 checkpoints
+        </div>
+
+    </div>
+
+    <div class="chart">
+        <svg
+            id="chart"
+            viewBox="0 0 1000 410"
+            preserveAspectRatio="none"
+        >
+            <g id="grid"></g>
+            <g id="line"></g>
+            <g id="points"></g>
+            <g id="labels"></g>
+        </svg>
+    </div>
+
+</section>
+
+
+<!-- Model / Runtime -->
+
+<section class="columns">
+
+    <div class="panel">
+
+        <div class="label">MODEL</div>
+        <h2 id="model">Talos</h2>
+
+        <div class="info">
+
+            <div class="info-row">
+                <span>Parameters</span>
+                <strong id="params">--</strong>
+            </div>
+
+            <div class="info-row">
+                <span>Vocabulary</span>
+                <strong id="vocab">--</strong>
+            </div>
+
+            <div class="info-row">
+                <span>Sequence length</span>
+                <strong id="seq">--</strong>
+            </div>
+
+            <div class="info-row">
+                <span>Epoch</span>
+                <strong id="epoch">--</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="panel">
+
+        <div class="label">RUNTIME</div>
+        <h2>Compute telemetry</h2>
+
+        <div class="info">
+
+            <div class="info-row">
+                <span>GPU</span>
+                <strong id="runtimeGpu">--</strong>
+            </div>
+
+            <div class="info-row">
+                <span>VRAM</span>
+                <strong id="runtimeVram">--</strong>
+            </div>
+
+            <div class="info-row">
+                <span>Compute credits</span>
+                <strong id="credits">--</strong>
+            </div>
+
+            <div class="info-row">
+                <span>Last update</span>
+                <strong id="lastUpdate">--</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<footer>
+    <span>Talos Training Tracker</span>
+    <span id="footer">Waiting for telemetry</span>
+</footer>
+
+</div>
+
+
+<script>
+
+/*
+============================================================
+CONFIG
+============================================================
+
+Put status.json and history.json somewhere publicly
+accessible.
+
+For example:
+
+Hugging Face dataset:
+PrometheanStudio/talos-training-tracker
+
+Then change DATA_URL below.
+*/
+
+const DATA_URL =
+    "https://huggingface.co/datasets/PrometheanStudio/talos-training-tracker/resolve/main";
+
+const REFRESH_MS = 10000;
+
+const DEFAULT_TARGET =
+    200_000_000;
+
+
+/*
+============================================================
+HELPERS
+============================================================
+*/
+
+const $ = id =>
+    document.getElementById(id);
+
+
+function number(value) {
+
+    if (
+        value === null ||
+        value === undefined ||
+        !Number.isFinite(value)
+    ) {
+        return "--";
+    }
+
+    return new Intl.NumberFormat("en-US")
+        .format(value);
+}
+
+
+function compact(value) {
+
+    if (
+        value === null ||
+        value === undefined ||
+        !Number.isFinite(value)
+    ) {
+        return "--";
+    }
+
+    if (Math.abs(value) >= 1e9)
+        return (value / 1e9).toFixed(2) + "B";
+
+    if (Math.abs(value) >= 1e6)
+        return (value / 1e6).toFixed(2) + "M";
+
+    if (Math.abs(value) >= 1e3)
+        return (value / 1e3).toFixed(1) + "K";
+
+    return Math.round(value).toString();
+}
+
+
+function duration(seconds) {
+
+    if (
+        seconds === null ||
+        seconds === undefined ||
+        !Number.isFinite(seconds)
+    ) {
+        return "--";
+    }
+
+    seconds = Math.max(0, Math.round(seconds));
+
+    const days =
+        Math.floor(seconds / 86400);
+
+    seconds %= 86400;
+
+    const hours =
+        Math.floor(seconds / 3600);
+
+    seconds %= 3600;
+
+    const minutes =
+        Math.floor(seconds / 60);
+
+    seconds %= 60;
+
+    if (days)
+        return `${days}d ${hours}h`;
+
+    if (hours)
+        return `${hours}h ${minutes}m`;
+
+    if (minutes)
+        return `${minutes}m ${seconds}s`;
+
+    return `${seconds}s`;
+}
+
+
+function loss(value) {
+
+    if (
+        value === null ||
+        value === undefined ||
+        !Number.isFinite(value)
+    ) {
+        return "--";
+    }
+
+    return Number(value).toFixed(4);
+}
+
+
+/*
+============================================================
+DASHBOARD
+============================================================
+*/
+
+function updateStatus(data) {
+
+    const target =
+        data.token_target ||
+        DEFAULT_TARGET;
+
+    const tokens =
+        data.tokens_consumed || 0;
+
+    const pct =
+        target > 0
+            ? Math.min(100, tokens / target * 100)
+            : 0;
+
+
+    $("tokens").textContent =
+        compact(tokens);
+
+    $("target").textContent =
+        compact(target);
+
+    $("percent").textContent =
+        pct.toFixed(2) + "%";
+
+    $("progress").style.width =
+        pct + "%";
+
+
+    $("remaining").textContent =
+        compact(
+            Math.max(0, target - tokens)
+        ) + " tokens remaining";
+
+
+    $("step").textContent =
+        number(data.step);
+
+    $("stepTarget").textContent =
+        data.step_target
+            ? "target: " + number(data.step_target)
+            : "global step";
+
+
+    $("tps").textContent =
+        compact(data.tokens_per_second);
+
+
+    $("elapsed").textContent =
+        duration(data.elapsed_seconds);
+
+
+    $("eta").textContent =
+        data.eta_seconds != null
+            ? duration(data.eta_seconds) + " remaining"
+            : "ETA unavailable";
+
+
+    $("etaCard").textContent =
+        duration(data.eta_seconds);
+
+
+    $("trainLoss").textContent =
+        loss(data.train_loss);
+
+    $("valLoss").textContent =
+        loss(data.val_loss);
+
+
+    $("checkpoint").textContent =
+        data.checkpoint || "--";
+
+
+    if (data.checkpoint_timestamp) {
+
+        const age =
+            (
+                Date.now() -
+                new Date(
+                    data.checkpoint_timestamp
+                ).getTime()
+            ) / 1000;
+
+        $("checkpointAge").textContent =
+            age < 5
+                ? "just now"
+                : duration(age) + " ago";
+
+    }
+
+
+    $("gpu").textContent =
+        data.gpu || "--";
+
+    $("runtimeGpu").textContent =
+        data.gpu || "--";
+
+
+    $("vram").textContent =
+        data.vram_used_mb
+            ? number(
+                Math.round(
+                    data.vram_used_mb
+                )
+            ) + " MB"
+            : "--";
+
+    $("runtimeVram").textContent =
+        $("vram").textContent;
+
+
+    $("credits").textContent =
+        data.compute_credits != null
+            ? data.compute_credits + " CU"
+            : "--";
+
+
+    $("model").textContent =
+        data.model_name || "Talos";
+
+
+    $("params").textContent =
+        data.parameters
+            ? number(data.parameters)
+            : "--";
+
+
+    $("vocab").textContent =
+        data.vocab_size
+            ? number(data.vocab_size)
+            : "--";
+
+
+    $("seq").textContent =
+        data.sequence_length
+            ? number(data.sequence_length)
+            : "--";
+
+
+    $("epoch").textContent =
+        data.epoch != null
+            ? number(data.epoch)
+            : "--";
+
+
+    $("lastUpdate").textContent =
+        data.timestamp
+            ? new Date(
+                data.timestamp
+            ).toLocaleTimeString()
+            : "--";
+
+
+    $("footer").textContent =
+        data.timestamp
+            ? "Updated " +
+              new Date(
+                  data.timestamp
+              ).toLocaleTimeString()
+            : "Waiting for telemetry";
+}
+
+
+/*
+============================================================
+LOSS GRAPH
+============================================================
+
+IMPORTANT:
+
+Every point is an ACTUAL checkpoint.
+
+No interpolation.
+
+The graph starts as:
+
+    ●
+
+Then:
+
+    ●──●
+
+Then:
+
+    ●──●──●
+
+And continues growing with every checkpoint.
+*/
+
+function drawGraph(history) {
+
+    const grid =
+        $("grid");
+
+    const line =
+        $("line");
+
+    const points =
+        $("points");
+
+    const labels =
+        $("labels");
+
+
+    grid.innerHTML = "";
+    line.innerHTML = "";
+    points.innerHTML = "";
+    labels.innerHTML = "";
+
+
+    const data =
+        (history.checkpoints || [])
+        .filter(
+            x =>
+                Number.isFinite(
+                    Number(x.step)
+                ) &&
+                Number.isFinite(
+                    Number(x.train_loss)
+                )
+        )
+        .sort(
+            (a,b) =>
+                Number(a.step) -
+                Number(b.step)
+        );
+
+
+    $("graphCount").textContent =
+        data.length +
+        " checkpoint" +
+        (data.length === 1 ? "" : "s");
+
+
+    if (!data.length)
+        return;
+
+
+    const W = 1000;
+    const H = 410;
+
+    const left = 65;
+    const right = 25;
+    const top = 25;
+    const bottom = 48;
+
+    const plotW =
+        W - left - right;
+
+    const plotH =
+        H - top - bottom;
+
+
+    const steps =
+        data.map(
+            x => Number(x.step)
+        );
+
+    const losses =
+        data.map(
+            x => Number(x.train_loss)
+        );
+
+
+    let minStep =
+        Math.min(...steps);
+
+    let maxStep =
+        Math.max(...steps);
+
+    let minLoss =
+        Math.min(...losses);
+
+    let maxLoss =
+        Math.max(...losses);
+
+
+    if (minStep === maxStep) {
+        minStep -= 1;
+        maxStep += 1;
+    }
+
+    if (minLoss === maxLoss) {
+        minLoss -= .5;
+        maxLoss += .5;
+    }
+
+
+    const padding =
+        (maxLoss - minLoss) * .1;
+
+    minLoss -= padding;
+    maxLoss += padding;
+
+
+    function x(step) {
+
+        return (
+            left +
+            (
+                (step - minStep) /
+                (maxStep - minStep)
+            ) *
+            plotW
+        );
+
+    }
+
+
+    function y(value) {
+
+        return (
+            top +
+            (
+                1 -
+                (
+                    (value - minLoss) /
+                    (maxLoss - minLoss)
+                )
+            ) *
+            plotH
+        );
+
+    }
+
+
+    /*
+    Grid
+    */
+
+    for (let i = 0; i <= 5; i++) {
+
+        const ratio =
+            i / 5;
+
+        const yy =
+            top +
+            ratio * plotH;
+
+
+        const gridLine =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "line"
+            );
+
+        gridLine.setAttribute(
+            "x1",
+            left
+        );
+
+        gridLine.setAttribute(
+            "x2",
+            W - right
+        );
+
+        gridLine.setAttribute(
+            "y1",
+            yy
+        );
+
+        gridLine.setAttribute(
+            "y2",
+            yy
+        );
+
+        gridLine.setAttribute(
+            "class",
+            "grid-line"
+        );
+
+        grid.appendChild(gridLine);
+
+
+        const value =
+            maxLoss -
+            ratio *
+            (maxLoss - minLoss);
+
+
+        const label =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "text"
+            );
+
+        label.setAttribute(
+            "x",
+            left - 10
+        );
+
+        label.setAttribute(
+            "y",
+            yy + 4
+        );
+
+        label.setAttribute(
+            "text-anchor",
+            "end"
+        );
+
+        label.setAttribute(
+            "class",
+            "axis-label"
+        );
+
+        label.textContent =
+            value.toFixed(2);
+
+        labels.appendChild(label);
+    }
+
+
+    /*
+    Loss line
+    */
+
+    const path =
+        data.map(
+            (point, i) => {
+
+                const command =
+                    i === 0
+                        ? "M"
+                        : "L";
+
+                return (
+                    command +
+                    " " +
+                    x(Number(point.step)) +
+                    " " +
+                    y(Number(point.train_loss))
+                );
+            }
+        ).join(" ");
+
+
+    const pathElement =
+        document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "path"
+        );
+
+    pathElement.setAttribute(
+        "d",
+        path
+    );
+
+    pathElement.setAttribute(
+        "class",
+        "loss-line"
+    );
+
+    line.appendChild(pathElement);
+
+
+    /*
+    One dot for EVERY checkpoint.
+    */
+
+    data.forEach(point => {
+
+        const circle =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "circle"
+            );
+
+        circle.setAttribute(
+            "cx",
+            x(Number(point.step))
+        );
+
+        circle.setAttribute(
+            "cy",
+            y(Number(point.train_loss))
+        );
+
+        circle.setAttribute(
+            "r",
+            5
+        );
+
+        circle.setAttribute(
+            "class",
+            "loss-point"
+        );
+
+
+        /*
+        Native browser tooltip.
+        */
+
+        const tooltip =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "title"
+            );
+
+        tooltip.textContent =
+            "Step " +
+            number(Number(point.step)) +
+            " • Loss " +
+            loss(Number(point.train_loss)) +
+            (
+                point.val_loss != null
+                    ? " • Val " +
+                      loss(Number(point.val_loss))
+                    : ""
+            );
+
+        circle.appendChild(tooltip);
+
+        points.appendChild(circle);
+    });
+
+
+    /*
+    X-axis labels.
+    */
+
+    const first =
+        data[0];
+
+    const last =
+        data[data.length - 1];
+
+
+    function addXLabel(point) {
+
+        const label =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "text"
+            );
+
+        label.setAttribute(
+            "x",
+            x(Number(point.step))
+        );
+
+        label.setAttribute(
+            "y",
+            H - 14
+        );
+
+        label.setAttribute(
+            "text-anchor",
+            "middle"
+        );
+
+        label.setAttribute(
+            "class",
+            "axis-label"
+        );
+
+        label.textContent =
+            compact(Number(point.step));
+
+        labels.appendChild(label);
+    }
+
+
+    addXLabel(first);
+
+    if (last !== first)
+        addXLabel(last);
+}
+
+
+/*
+============================================================
+NETWORK
+============================================================
+*/
+
+async function getJson(file) {
+
+    const response =
+        await fetch(
+            DATA_URL +
+            "/" +
+            file +
+            "?t=" +
+            Date.now(),
+            {
+                cache: "no-store"
+            }
+        );
+
+
+    if (!response.ok)
+        throw new Error(
+            "HTTP " +
+            response.status
+        );
+
+
+    return response.json();
+}
+
+
+async function refresh() {
+
+    try {
+
+        const [
+            status,
+            history
+        ] = await Promise.all([
+            getJson("status.json"),
+            getJson("history.json")
+        ]);
+
+
+        updateStatus(status);
+
+        drawGraph(history);
+
+
+        $("status")
+            .classList
+            .remove("error");
+
+        $("status")
+            .classList
+            .add("live");
+
+        $("statusText")
+            .textContent =
+            status.status === "completed"
+                ? "Completed"
+                : status.status === "paused"
+                    ? "Paused"
+                    : "Live";
+
+
+    } catch (error) {
+
+        console.error(
+            "Tracker update failed:",
+            error
+        );
+
+
+        $("status")
+            .classList
+            .remove("live");
+
+        $("status")
+            .classList
+            .add("error");
+
+        $("statusText")
+            .textContent =
+            "Offline";
+
+        $("footer")
+            .textContent =
+            "Unable to reach training telemetry";
+    }
+}
+
+
+/*
+Initial load + live updates.
+*/
+
+refresh();
+
+setInterval(
+    refresh,
+    REFRESH_MS
+);
+
+</script>
+
+</body>
+</html>
