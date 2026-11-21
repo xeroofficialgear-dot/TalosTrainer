@@ -1,979 +1,835 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Talos Training Tracker</title>
+<title>Talos | Promethean Command Center</title>
 
 <style>
 :root {
-    --bg: #08090c;
-    --card: #101218;
-    --card2: #151821;
-    --border: #252a34;
-    --text: #f3f4f6;
-    --muted: #8c93a1;
-    --green: #70e7a0;
-    --red: #ff6868;
-    --yellow: #f3c969;
-    --white: #ffffff;
+    --bg:#080d17;
+    --surface:#101a2b;
+    --surface2:#152238;
+    --border:#23334c;
+    --text:#edf4ff;
+    --muted:#8294ad;
+    --blue:#62aaff;
+    --cyan:#55d5ed;
+    --green:#65e6a0;
+    --red:#ff6868;
+    --yellow:#f2ca70;
 }
 
-* {
-    box-sizing: border-box;
-}
+* {box-sizing:border-box;scroll-behavior:smooth}
 
 body {
-    margin: 0;
-    min-height: 100vh;
+    margin:0;
+    min-height:100vh;
     background:
-        radial-gradient(
-            circle at 50% -10%,
-            rgba(255,255,255,.06),
-            transparent 42%
-        ),
+        radial-gradient(ellipse at 50% -20%,#1b3c68 0%,transparent 48%),
         var(--bg);
-    color: var(--text);
-    font-family:
-        Inter,
-        ui-sans-serif,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
+    color:var(--text);
+    font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
 }
+
+button {font:inherit}
 
 .app {
-    width: min(1400px, calc(100% - 40px));
-    margin: auto;
-    padding: 32px 0 24px;
+    width:min(1450px,calc(100% - 40px));
+    margin:auto;
+    padding:28px 0;
 }
+
+/* HEADER */
 
 header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 28px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    margin-bottom:25px;
 }
 
-.eyebrow,
-.label {
-    color: var(--muted);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: .13em;
+.brand {
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.brand-icon {
+    width:47px;
+    height:47px;
+    display:grid;
+    place-items:center;
+    border:1px solid #37618e;
+    border-radius:13px;
+    color:var(--blue);
+    background:linear-gradient(145deg,#1c3555,#101a2b);
+    font-size:23px;
+    font-weight:800;
+    box-shadow:0 0 25px #3986ff20;
+}
+
+.eyebrow,.label {
+    color:var(--muted);
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:.15em;
 }
 
 h1 {
-    margin: 5px 0 2px;
-    font-size: 34px;
-    letter-spacing: -.045em;
+    margin:3px 0;
+    font-size:30px;
+    letter-spacing:-.045em;
 }
 
 h2 {
-    margin: 5px 0 0;
-    font-size: 19px;
-    letter-spacing: -.025em;
+    margin:5px 0 0;
+    font-size:19px;
+    letter-spacing:-.025em;
 }
 
 .subtitle {
-    color: var(--muted);
-    font-size: 14px;
+    color:var(--muted);
+    font-size:12px;
+}
+
+.header-right {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
 }
 
 .status {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 9px 14px;
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    background: var(--card);
-    color: var(--muted);
-    font-size: 13px;
+    display:flex;
+    align-items:center;
+    gap:9px;
+    padding:10px 15px;
+    border:1px solid var(--border);
+    border-radius:9px;
+    background:var(--surface);
+    color:var(--muted);
+    font-size:12px;
 }
 
 .status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--yellow);
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:var(--yellow);
 }
 
 .status.live .status-dot {
-    background: var(--green);
-    box-shadow: 0 0 12px rgba(112,231,160,.7);
+    background:var(--green);
+    box-shadow:0 0 12px var(--green);
 }
 
 .status.error .status-dot {
-    background: var(--red);
-    box-shadow: 0 0 12px rgba(255,104,104,.7);
+    background:var(--red);
+    box-shadow:0 0 12px var(--red);
 }
 
-/* Progress */
+/* NAVIGATION */
 
-.hero,
-.card,
-.panel {
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    background: var(--card);
+.navigation {
+    display:flex;
+    align-items:center;
+    gap:7px;
+    padding:8px;
+    margin-bottom:18px;
+    background:#101a2b;
+    border:1px solid var(--border);
+    border-radius:12px;
+    overflow-x:auto;
 }
+
+.nav-button {
+    padding:10px 17px;
+    border:1px solid transparent;
+    border-radius:8px;
+    color:var(--muted);
+    background:transparent;
+    cursor:pointer;
+    white-space:nowrap;
+    font-size:12px;
+    font-weight:650;
+    transition:.2s;
+}
+
+.nav-button:hover,
+.nav-button.active {
+    color:var(--blue);
+    background:#1a2b43;
+    border-color:#34577e;
+}
+
+/* GENERAL PANELS */
+
+.hero,.card,.panel {
+    border:1px solid var(--border);
+    border-radius:13px;
+    background:linear-gradient(145deg,#111d30,#0e1726);
+    box-shadow:0 8px 30px #00000015;
+}
+
+.hero,.panel {padding:23px}
 
 .hero {
-    padding: 25px;
-    margin-bottom: 14px;
+    position:relative;
+    overflow:hidden;
+    margin-bottom:14px;
+}
+
+.hero:after {
+    content:"";
+    position:absolute;
+    top:-100px;
+    right:-80px;
+    width:300px;
+    height:300px;
+    border-radius:50%;
+    background:#438dff0c;
+    pointer-events:none;
 }
 
 .hero-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:15px;
 }
 
 .progress-numbers {
-    display: flex;
-    gap: 8px;
-    align-items: baseline;
-    margin-top: 7px;
-    font-size: 31px;
-    font-weight: 700;
-    letter-spacing: -.04em;
+    display:flex;
+    align-items:baseline;
+    gap:9px;
+    margin-top:9px;
+    font-size:clamp(25px,4vw,38px);
+    font-weight:750;
+    letter-spacing:-.05em;
 }
 
-.muted {
-    color: var(--muted);
-}
+.muted {color:var(--muted)}
 
 .percent {
-    font-size: 20px;
-    font-weight: 600;
+    color:var(--blue);
+    font-size:25px;
+    font-weight:750;
 }
 
 .progress-track {
-    height: 8px;
-    margin-top: 22px;
-    overflow: hidden;
-    border-radius: 999px;
-    background: var(--card2);
+    height:10px;
+    margin-top:24px;
+    overflow:hidden;
+    border-radius:20px;
+    background:#1e2c40;
 }
 
 .progress-fill {
-    width: 0%;
-    height: 100%;
-    background: white;
-    transition: width .5s ease;
+    width:0%;
+    height:100%;
+    background:linear-gradient(90deg,#397fe5,var(--cyan));
+    box-shadow:0 0 18px #55aaff70;
+    transition:width .5s ease;
 }
 
 .progress-footer {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
-    color: var(--muted);
-    font-size: 12px;
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    margin-top:11px;
+    color:var(--muted);
+    font-size:11px;
 }
 
-/* Stats */
+/* STATISTICS */
+
+.section-heading {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin:25px 0 12px;
+}
 
 .stats {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
-    margin-bottom: 14px;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+    margin-bottom:14px;
 }
 
 .card {
-    padding: 18px;
+    position:relative;
+    padding:18px;
+    min-width:0;
+    transition:transform .2s,border-color .2s,background .2s;
+}
+
+.card:hover {
+    transform:translateY(-3px);
+    border-color:#416a96;
+    background:#14233a;
 }
 
 .value {
-    margin-top: 8px;
-    font-size: 25px;
-    font-weight: 700;
-    letter-spacing: -.04em;
+    margin-top:11px;
+    font-size:25px;
+    font-weight:750;
+    letter-spacing:-.045em;
+    overflow-wrap:anywhere;
 }
 
-.value.small {
-    font-size: 18px;
-}
+.value.small {font-size:17px}
 
 .secondary {
-    margin-top: 5px;
-    color: var(--muted);
-    font-size: 11px;
+    margin-top:6px;
+    color:var(--muted);
+    font-size:11px;
 }
 
-/* Panels */
+/* PANELS */
 
-.panel {
-    padding: 22px;
-    margin-bottom: 14px;
-}
+.panel {margin-bottom:14px}
 
 .panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin-bottom:18px;
 }
 
 .graph-count {
-    color: var(--muted);
-    font-size: 12px;
+    color:var(--muted);
+    font-size:11px;
+}
+
+.chart-controls {
+    display:flex;
+    gap:5px;
+    flex-wrap:wrap;
+}
+
+.chart-button,.action-button {
+    padding:8px 12px;
+    border:1px solid var(--border);
+    border-radius:7px;
+    color:var(--muted);
+    background:#142238;
+    font-size:11px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.chart-button:hover,.action-button:hover,
+.chart-button.active {
+    color:var(--blue);
+    border-color:#4778ac;
+    background:#1d3553;
 }
 
 .chart {
-    height: 410px;
-    border-radius: 12px;
-    overflow: hidden;
-    background: rgba(0,0,0,.16);
+    height:350px;
+    border:1px solid #23334b;
+    border-radius:10px;
+    overflow:hidden;
+    background:#0a1321;
 }
 
-svg {
-    width: 100%;
-    height: 100%;
-}
+svg {width:100%;height:100%}
 
 .grid-line {
-    stroke: rgba(255,255,255,.07);
-    stroke-width: 1;
+    stroke:#ffffff0d;
+    stroke-width:1;
 }
 
 .loss-line {
-    fill: none;
-    stroke: white;
-    stroke-width: 2;
-    vector-effect: non-scaling-stroke;
+    fill:none;
+    stroke:var(--blue);
+    stroke-width:2.5;
+    vector-effect:non-scaling-stroke;
+    filter:drop-shadow(0 0 5px #62aaff55);
 }
 
 .loss-point {
-    fill: var(--bg);
-    stroke: white;
-    stroke-width: 2;
-    vector-effect: non-scaling-stroke;
+    fill:#0a1321;
+    stroke:var(--cyan);
+    stroke-width:2;
+    vector-effect:non-scaling-stroke;
 }
 
 .axis-label {
-    fill: var(--muted);
-    font-size: 12px;
+    fill:var(--muted);
+    font-size:12px;
 }
 
-/* Info */
+/* INFO */
 
 .columns {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
 }
 
-.info {
-    margin-top: 18px;
-}
+.info {margin-top:18px}
 
 .info-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 11px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 13px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    padding:13px 0;
+    border-bottom:1px solid var(--border);
+    font-size:12px;
 }
 
-.info-row:last-child {
-    border-bottom: 0;
+.info-row:last-child {border-bottom:0}
+
+.info-row span {color:var(--muted)}
+.info-row strong {text-align:right;overflow-wrap:anywhere}
+
+/* DETAILS */
+
+.details-panel {
+    display:none;
+    margin-bottom:14px;
+    padding:20px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    background:#111d30;
 }
 
-.info-row span {
-    color: var(--muted);
-}
+.details-panel.open {display:block}
 
-.info-row strong {
-    text-align: right;
+.details-panel p {
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.7;
 }
 
 footer {
-    display: flex;
-    justify-content: space-between;
-    color: var(--muted);
-    font-size: 11px;
-    padding: 12px 2px;
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    padding:18px 2px;
+    color:var(--muted);
+    font-size:10px;
+    letter-spacing:.04em;
 }
 
-/* Mobile */
+/* RESPONSIVE */
 
-@media (max-width: 900px) {
-    .stats {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .columns {
-        grid-template-columns: 1fr;
-    }
+@media(max-width:900px) {
+    .stats {grid-template-columns:repeat(2,1fr)}
+    .columns {grid-template-columns:1fr}
 }
 
-@media (max-width: 600px) {
-    .app {
-        width: calc(100% - 24px);
-        padding-top: 18px;
-    }
-
-    header {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .hero-top {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-    }
-
-    .stats {
-        grid-template-columns: 1fr;
-    }
-
-    .chart {
-        height: 300px;
-    }
-
-    footer {
-        flex-direction: column;
-        gap: 6px;
-    }
+@media(max-width:600px) {
+    .app {width:calc(100% - 22px);padding-top:17px}
+    header {align-items:flex-start;flex-direction:column}
+    .header-right {width:100%}
+    .hero-top {align-items:flex-start;flex-direction:column}
+    .stats {grid-template-columns:repeat(2,minmax(0,1fr))}
+    .card {padding:14px}
+    .value {font-size:21px}
+    .chart {height:270px}
+    .panel,.hero {padding:16px}
+    .panel-header {align-items:flex-start;flex-direction:column}
+    footer {flex-direction:column}
 }
 </style>
 </head>
 
 <body>
-
 <div class="app">
 
 <header>
-    <div>
-        <div class="eyebrow">PROMETHEAN STUDIOS</div>
-        <h1>Talos Training</h1>
-        <div class="subtitle">Live training telemetry</div>
+    <div class="brand">
+        <div class="brand-icon">P</div>
+        <div>
+            <div class="eyebrow">PROMETHEAN STUDIOS / SYSTEMS</div>
+            <h1>Talos Command Center</h1>
+            <div class="subtitle">Neural training telemetry and infrastructure monitoring</div>
+        </div>
     </div>
 
-    <div class="status" id="status">
-        <span class="status-dot"></span>
-        <span id="statusText">Connecting</span>
+    <div class="header-right">
+        <button class="action-button" id="refreshButton" onclick="refresh()">↻ Refresh</button>
+        <div class="status" id="status">
+            <span class="status-dot"></span>
+            <span id="statusText">Connecting</span>
+        </div>
     </div>
 </header>
 
+<nav class="navigation">
+    <button class="nav-button active" data-target="overview">◈ Overview</button>
+    <button class="nav-button" data-target="training">⌁ Training</button>
+    <button class="nav-button" data-target="modelSection">▣ Model</button>
+    <button class="nav-button" data-target="runtimeSection">▤ Runtime</button>
+    <button class="nav-button" id="detailsButton">ⓘ Details</button>
+</nav>
 
-<!-- Progress -->
+<!-- OVERVIEW -->
 
-<section class="hero">
-
-    <div class="hero-top">
-
-        <div>
-            <div class="label">TOKEN PROGRESS</div>
-
-            <div class="progress-numbers">
-                <span id="tokens">0</span>
-                <span class="muted">/</span>
-                <span id="target">0</span>
+<div id="overview">
+    <section class="hero">
+        <div class="hero-top">
+            <div>
+                <div class="label">TOTAL TOKEN PROGRESS</div>
+                <div class="progress-numbers">
+                    <span id="tokens">0</span>
+                    <span class="muted">/</span>
+                    <span id="target">0</span>
+                </div>
             </div>
+            <div class="percent" id="percent">0.00%</div>
         </div>
 
-        <div class="percent" id="percent">
-            0.00%
+        <div class="progress-track">
+            <div class="progress-fill" id="progress"></div>
         </div>
 
+        <div class="progress-footer">
+            <span id="remaining">0 tokens remaining</span>
+            <span id="eta">ETA unavailable</span>
+        </div>
+    </section>
+
+    <div class="section-heading">
+        <div>
+            <div class="label">LIVE TELEMETRY</div>
+            <h2>Training statistics</h2>
+        </div>
+        <div class="graph-count">AUTO-REFRESH: 10 SEC</div>
     </div>
 
-    <div class="progress-track">
-        <div class="progress-fill" id="progress"></div>
-    </div>
+    <section class="stats">
+        <div class="card">
+            <div class="label">TRAINING STEP</div>
+            <div class="value" id="step">--</div>
+            <div class="secondary" id="stepTarget">--</div>
+        </div>
 
-    <div class="progress-footer">
-        <span id="remaining">0 tokens remaining</span>
-        <span id="eta">ETA unavailable</span>
-    </div>
+        <div class="card">
+            <div class="label">TOKENS / SEC</div>
+            <div class="value" id="tps">--</div>
+            <div class="secondary">Current throughput</div>
+        </div>
 
-</section>
+        <div class="card">
+            <div class="label">ELAPSED TIME</div>
+            <div class="value" id="elapsed">--</div>
+            <div class="secondary">Total training time</div>
+        </div>
 
+        <div class="card">
+            <div class="label">ESTIMATED COMPLETION</div>
+            <div class="value" id="etaCard">--</div>
+            <div class="secondary">Remaining runtime</div>
+        </div>
 
-<!-- Statistics -->
+        <div class="card">
+            <div class="label">TRAIN LOSS</div>
+            <div class="value" id="trainLoss">--</div>
+            <div class="secondary">Latest checkpoint</div>
+        </div>
 
-<section class="stats">
+        <div class="card">
+            <div class="label">VALIDATION LOSS</div>
+            <div class="value" id="valLoss">--</div>
+            <div class="secondary">Latest checkpoint</div>
+        </div>
 
-    <div class="card">
-        <div class="label">STEP</div>
-        <div class="value" id="step">--</div>
-        <div class="secondary" id="stepTarget">--</div>
-    </div>
+        <div class="card">
+            <div class="label">CHECKPOINT</div>
+            <div class="value small" id="checkpoint">--</div>
+            <div class="secondary" id="checkpointAge">--</div>
+        </div>
 
-    <div class="card">
-        <div class="label">TOKENS / SEC</div>
-        <div class="value" id="tps">--</div>
-        <div class="secondary">current throughput</div>
-    </div>
+        <div class="card">
+            <div class="label">GPU</div>
+            <div class="value small" id="gpu">--</div>
+            <div class="secondary" id="vram">--</div>
+        </div>
+    </section>
+</div>
 
-    <div class="card">
-        <div class="label">ELAPSED</div>
-        <div class="value" id="elapsed">--</div>
-        <div class="secondary">training time</div>
-    </div>
+<!-- TRAINING -->
 
-    <div class="card">
-        <div class="label">ETA</div>
-        <div class="value" id="etaCard">--</div>
-        <div class="secondary">estimated completion</div>
-    </div>
-
-    <div class="card">
-        <div class="label">TRAIN LOSS</div>
-        <div class="value" id="trainLoss">--</div>
-        <div class="secondary">latest checkpoint</div>
-    </div>
-
-    <div class="card">
-        <div class="label">VAL LOSS</div>
-        <div class="value" id="valLoss">--</div>
-        <div class="secondary">latest checkpoint</div>
-    </div>
-
-    <div class="card">
-        <div class="label">CHECKPOINT</div>
-        <div class="value small" id="checkpoint">--</div>
-        <div class="secondary" id="checkpointAge">--</div>
-    </div>
-
-    <div class="card">
-        <div class="label">GPU</div>
-        <div class="value small" id="gpu">--</div>
-        <div class="secondary" id="vram">--</div>
-    </div>
-
-</section>
-
-
-<!-- Loss graph -->
-
-<section class="panel">
-
+<section id="training" class="panel">
     <div class="panel-header">
+        <div>
+            <div class="label">TRAINING ANALYTICS</div>
+            <h2>Loss history</h2>
+        </div>
 
         <div>
-            <div class="label">TRAINING LOSS</div>
-            <h2>Checkpoint history</h2>
+            <div class="chart-controls">
+                <button class="chart-button active" data-range="all">All</button>
+                <button class="chart-button" data-range="10">10</button>
+                <button class="chart-button" data-range="25">25</button>
+                <button class="chart-button" data-range="50">50</button>
+            </div>
+            <div class="graph-count" id="graphCount" style="text-align:right;margin-top:8px">0 checkpoints</div>
         </div>
-
-        <div class="graph-count" id="graphCount">
-            0 checkpoints
-        </div>
-
     </div>
 
     <div class="chart">
-        <svg
-            id="chart"
-            viewBox="0 0 1000 410"
-            preserveAspectRatio="none"
-        >
+        <svg id="chart" viewBox="0 0 1000 410" preserveAspectRatio="none">
             <g id="grid"></g>
             <g id="line"></g>
             <g id="points"></g>
             <g id="labels"></g>
         </svg>
     </div>
-
+    <div class="secondary">Each plotted point represents an actual checkpoint. Hover over a point for its recorded values.</div>
 </section>
 
-
-<!-- Model / Runtime -->
+<!-- MODEL / RUNTIME -->
 
 <section class="columns">
-
-    <div class="panel">
-
-        <div class="label">MODEL</div>
+    <div class="panel" id="modelSection">
+        <div class="label">MODEL ARCHITECTURE</div>
         <h2 id="model">Talos</h2>
-
         <div class="info">
-
-            <div class="info-row">
-                <span>Parameters</span>
-                <strong id="params">--</strong>
-            </div>
-
-            <div class="info-row">
-                <span>Vocabulary</span>
-                <strong id="vocab">--</strong>
-            </div>
-
-            <div class="info-row">
-                <span>Sequence length</span>
-                <strong id="seq">--</strong>
-            </div>
-
-            <div class="info-row">
-                <span>Epoch</span>
-                <strong id="epoch">--</strong>
-            </div>
-
+            <div class="info-row"><span>Parameters</span><strong id="params">--</strong></div>
+            <div class="info-row"><span>Vocabulary</span><strong id="vocab">--</strong></div>
+            <div class="info-row"><span>Sequence length</span><strong id="seq">--</strong></div>
+            <div class="info-row"><span>Epoch</span><strong id="epoch">--</strong></div>
         </div>
-
     </div>
 
-
-    <div class="panel">
-
-        <div class="label">RUNTIME</div>
-        <h2>Compute telemetry</h2>
-
+    <div class="panel" id="runtimeSection">
+        <div class="label">COMPUTE INFRASTRUCTURE</div>
+        <h2>Runtime telemetry</h2>
         <div class="info">
-
-            <div class="info-row">
-                <span>GPU</span>
-                <strong id="runtimeGpu">--</strong>
-            </div>
-
-            <div class="info-row">
-                <span>VRAM</span>
-                <strong id="runtimeVram">--</strong>
-            </div>
-
-            <div class="info-row">
-                <span>Compute credits</span>
-                <strong id="credits">--</strong>
-            </div>
-
-            <div class="info-row">
-                <span>Last update</span>
-                <strong id="lastUpdate">--</strong>
-            </div>
-
+            <div class="info-row"><span>GPU</span><strong id="runtimeGpu">--</strong></div>
+            <div class="info-row"><span>VRAM</span><strong id="runtimeVram">--</strong></div>
+            <div class="info-row"><span>Compute credits</span><strong id="credits">--</strong></div>
+            <div class="info-row"><span>Last update</span><strong id="lastUpdate">--</strong></div>
         </div>
-
     </div>
-
 </section>
 
+<!-- DETAILS -->
+
+<section class="details-panel" id="detailsPanel">
+    <div class="label">SYSTEM INFORMATION</div>
+    <h2>Tracker details</h2>
+    <p>
+        Promethean Studios / Talos Training Tracker.
+        Telemetry is retrieved from the public Hugging Face dataset.
+        The dashboard refreshes every 10 seconds.
+        Navigation, graph filters, and manual refresh operate locally
+        and do not control the training process.
+    </p>
+    <p>Data sources: status.json and history.json</p>
+    <p>Dashboard status: <strong id="detailsStatus">Waiting for connection</strong></p>
+</section>
 
 <footer>
-    <span>Talos Training Tracker</span>
+    <span>PROMETHEAN STUDIOS © 2026</span>
     <span id="footer">Waiting for telemetry</span>
 </footer>
 
 </div>
 
-
 <script>
 
-/*
-============================================================
-CONFIG
-============================================================
-
-Put status.json and history.json somewhere publicly
-accessible.
-
-For example:
-
-Hugging Face dataset:
-PrometheanStudio/talos-training-tracker
-
-Then change DATA_URL below.
-*/
+/* CONFIG */
 
 const DATA_URL =
-    "https://huggingface.co/datasets/PrometheanStudio/talos-training-tracker/resolve/main";
+"https://huggingface.co/datasets/PrometheanStudio/talos-training-tracker/resolve/main";
 
 const REFRESH_MS = 10000;
+const DEFAULT_TARGET = 200_000_000;
 
-const DEFAULT_TARGET =
-    200_000_000;
+let currentHistory = [];
+let currentRange = "all";
 
+/* HELPERS */
 
-/*
-============================================================
-HELPERS
-============================================================
-*/
-
-const $ = id =>
-    document.getElementById(id);
-
+const $ = id => document.getElementById(id);
 
 function number(value) {
-
-    if (
-        value === null ||
-        value === undefined ||
-        !Number.isFinite(value)
-    ) {
+    if (value === null || value === undefined || !Number.isFinite(value))
         return "--";
-    }
 
-    return new Intl.NumberFormat("en-US")
-        .format(value);
+    return new Intl.NumberFormat("en-US").format(value);
 }
 
-
 function compact(value) {
-
-    if (
-        value === null ||
-        value === undefined ||
-        !Number.isFinite(value)
-    ) {
+    if (value === null || value === undefined || !Number.isFinite(value))
         return "--";
-    }
 
-    if (Math.abs(value) >= 1e9)
-        return (value / 1e9).toFixed(2) + "B";
-
-    if (Math.abs(value) >= 1e6)
-        return (value / 1e6).toFixed(2) + "M";
-
-    if (Math.abs(value) >= 1e3)
-        return (value / 1e3).toFixed(1) + "K";
+    if (Math.abs(value) >= 1e9) return (value / 1e9).toFixed(2) + "B";
+    if (Math.abs(value) >= 1e6) return (value / 1e6).toFixed(2) + "M";
+    if (Math.abs(value) >= 1e3) return (value / 1e3).toFixed(1) + "K";
 
     return Math.round(value).toString();
 }
 
-
 function duration(seconds) {
-
-    if (
-        seconds === null ||
-        seconds === undefined ||
-        !Number.isFinite(seconds)
-    ) {
+    if (seconds === null || seconds === undefined || !Number.isFinite(seconds))
         return "--";
-    }
 
     seconds = Math.max(0, Math.round(seconds));
 
-    const days =
-        Math.floor(seconds / 86400);
-
+    const days = Math.floor(seconds / 86400);
     seconds %= 86400;
 
-    const hours =
-        Math.floor(seconds / 3600);
-
+    const hours = Math.floor(seconds / 3600);
     seconds %= 3600;
 
-    const minutes =
-        Math.floor(seconds / 60);
-
+    const minutes = Math.floor(seconds / 60);
     seconds %= 60;
 
-    if (days)
-        return `${days}d ${hours}h`;
-
-    if (hours)
-        return `${hours}h ${minutes}m`;
-
-    if (minutes)
-        return `${minutes}m ${seconds}s`;
+    if (days) return `${days}d ${hours}h`;
+    if (hours) return `${hours}h ${minutes}m`;
+    if (minutes) return `${minutes}m ${seconds}s`;
 
     return `${seconds}s`;
 }
 
-
 function loss(value) {
-
-    if (
-        value === null ||
-        value === undefined ||
-        !Number.isFinite(value)
-    ) {
+    if (value === null || value === undefined || !Number.isFinite(value))
         return "--";
-    }
 
     return Number(value).toFixed(4);
 }
 
-
-/*
-============================================================
-DASHBOARD
-============================================================
-*/
+/* STATUS UPDATE */
 
 function updateStatus(data) {
+    const target = Number(data.token_target) || DEFAULT_TARGET;
+    const tokens = Number(data.tokens_consumed) || 0;
+    const pct = target > 0 ? Math.min(100, tokens / target * 100) : 0;
 
-    const target =
-        data.token_target ||
-        DEFAULT_TARGET;
-
-    const tokens =
-        data.tokens_consumed || 0;
-
-    const pct =
-        target > 0
-            ? Math.min(100, tokens / target * 100)
-            : 0;
-
-
-    $("tokens").textContent =
-        compact(tokens);
-
-    $("target").textContent =
-        compact(target);
-
-    $("percent").textContent =
-        pct.toFixed(2) + "%";
-
-    $("progress").style.width =
-        pct + "%";
-
+    $("tokens").textContent = compact(tokens);
+    $("target").textContent = compact(target);
+    $("percent").textContent = pct.toFixed(2) + "%";
+    $("progress").style.width = pct + "%";
 
     $("remaining").textContent =
-        compact(
-            Math.max(0, target - tokens)
-        ) + " tokens remaining";
+        compact(Math.max(0, target - tokens)) + " tokens remaining";
 
+    $("step").textContent = number(data.step);
 
-    $("step").textContent =
-        number(data.step);
+    $("stepTarget").textContent = data.step_target
+        ? "Target: " + number(data.step_target)
+        : "Global step";
 
-    $("stepTarget").textContent =
-        data.step_target
-            ? "target: " + number(data.step_target)
-            : "global step";
+    $("tps").textContent = compact(data.tokens_per_second);
+    $("elapsed").textContent = duration(data.elapsed_seconds);
 
+    $("eta").textContent = data.eta_seconds != null
+        ? duration(data.eta_seconds) + " remaining"
+        : "ETA unavailable";
 
-    $("tps").textContent =
-        compact(data.tokens_per_second);
+    $("etaCard").textContent = duration(data.eta_seconds);
 
+    $("trainLoss").textContent = loss(data.train_loss);
+    $("valLoss").textContent = loss(data.val_loss);
 
-    $("elapsed").textContent =
-        duration(data.elapsed_seconds);
-
-
-    $("eta").textContent =
-        data.eta_seconds != null
-            ? duration(data.eta_seconds) + " remaining"
-            : "ETA unavailable";
-
-
-    $("etaCard").textContent =
-        duration(data.eta_seconds);
-
-
-    $("trainLoss").textContent =
-        loss(data.train_loss);
-
-    $("valLoss").textContent =
-        loss(data.val_loss);
-
-
-    $("checkpoint").textContent =
-        data.checkpoint || "--";
-
+    $("checkpoint").textContent = data.checkpoint || "--";
 
     if (data.checkpoint_timestamp) {
+        const timestamp = new Date(data.checkpoint_timestamp).getTime();
+        const age = (Date.now() - timestamp) / 1000;
 
-        const age =
-            (
-                Date.now() -
-                new Date(
-                    data.checkpoint_timestamp
-                ).getTime()
-            ) / 1000;
-
-        $("checkpointAge").textContent =
-            age < 5
-                ? "just now"
-                : duration(age) + " ago";
-
+        $("checkpointAge").textContent = Number.isFinite(age)
+            ? age < 5 ? "Just now" : duration(age) + " ago"
+            : "--";
+    } else {
+        $("checkpointAge").textContent = "--";
     }
 
+    $("gpu").textContent = data.gpu || "--";
+    $("runtimeGpu").textContent = data.gpu || "--";
 
-    $("gpu").textContent =
-        data.gpu || "--";
+    $("vram").textContent = data.vram_used_mb != null
+        ? number(Math.round(data.vram_used_mb)) + " MB"
+        : "--";
 
-    $("runtimeGpu").textContent =
-        data.gpu || "--";
+    $("runtimeVram").textContent = $("vram").textContent;
 
+    $("credits").textContent = data.compute_credits != null
+        ? data.compute_credits + " CU"
+        : "--";
 
-    $("vram").textContent =
-        data.vram_used_mb
-            ? number(
-                Math.round(
-                    data.vram_used_mb
-                )
-            ) + " MB"
-            : "--";
+    $("model").textContent = data.model_name || "Talos";
 
-    $("runtimeVram").textContent =
-        $("vram").textContent;
+    $("params").textContent = data.parameters
+        ? number(data.parameters)
+        : "--";
 
+    $("vocab").textContent = data.vocab_size
+        ? number(data.vocab_size)
+        : "--";
 
-    $("credits").textContent =
-        data.compute_credits != null
-            ? data.compute_credits + " CU"
-            : "--";
+    $("seq").textContent = data.sequence_length
+        ? number(data.sequence_length)
+        : "--";
 
+    $("epoch").textContent = data.epoch != null
+        ? number(data.epoch)
+        : "--";
 
-    $("model").textContent =
-        data.model_name || "Talos";
+    $("lastUpdate").textContent = data.timestamp
+        ? new Date(data.timestamp).toLocaleTimeString()
+        : "--";
 
+    $("footer").textContent = data.timestamp
+        ? "Updated " + new Date(data.timestamp).toLocaleTimeString()
+        : "Waiting for telemetry";
 
-    $("params").textContent =
-        data.parameters
-            ? number(data.parameters)
-            : "--";
-
-
-    $("vocab").textContent =
-        data.vocab_size
-            ? number(data.vocab_size)
-            : "--";
-
-
-    $("seq").textContent =
-        data.sequence_length
-            ? number(data.sequence_length)
-            : "--";
-
-
-    $("epoch").textContent =
-        data.epoch != null
-            ? number(data.epoch)
-            : "--";
-
-
-    $("lastUpdate").textContent =
-        data.timestamp
-            ? new Date(
-                data.timestamp
-            ).toLocaleTimeString()
-            : "--";
-
-
-    $("footer").textContent =
-        data.timestamp
-            ? "Updated " +
-              new Date(
-                  data.timestamp
-              ).toLocaleTimeString()
-            : "Waiting for telemetry";
+    $("detailsStatus").textContent = data.status || "Unknown";
 }
 
-
-/*
-============================================================
-LOSS GRAPH
-============================================================
-
-IMPORTANT:
-
-Every point is an ACTUAL checkpoint.
-
-No interpolation.
-
-The graph starts as:
-
-    ●
-
-Then:
-
-    ●──●
-
-Then:
-
-    ●──●──●
-
-And continues growing with every checkpoint.
-*/
+/* GRAPH */
 
 function drawGraph(history) {
-
-    const grid =
-        $("grid");
-
-    const line =
-        $("line");
-
-    const points =
-        $("points");
-
-    const labels =
-        $("labels");
-
+    const grid = $("grid");
+    const line = $("line");
+    const points = $("points");
+    const labels = $("labels");
 
     grid.innerHTML = "";
     line.innerHTML = "";
     points.innerHTML = "";
     labels.innerHTML = "";
 
-
-    const data =
-        (history.checkpoints || [])
-        .filter(
-            x =>
-                Number.isFinite(
-                    Number(x.step)
-                ) &&
-                Number.isFinite(
-                    Number(x.train_loss)
-                )
+    let data = (history.checkpoints || [])
+        .filter(x =>
+            Number.isFinite(Number(x.step)) &&
+            Number.isFinite(Number(x.train_loss))
         )
-        .sort(
-            (a,b) =>
-                Number(a.step) -
-                Number(b.step)
-        );
-
+        .sort((a,b) => Number(a.step) - Number(b.step));
 
     $("graphCount").textContent =
-        data.length +
-        " checkpoint" +
-        (data.length === 1 ? "" : "s");
+        data.length + " checkpoint" + (data.length === 1 ? "" : "s");
 
+    if (currentRange !== "all") {
+        data = data.slice(-Number(currentRange));
+    }
 
-    if (!data.length)
-        return;
+    if (!data.length) return;
 
+    const W = 1000, H = 410;
+    const left = 65, right = 25, top = 25, bottom = 48;
+    const plotW = W - left - right;
+    const plotH = H - top - bottom;
 
-    const W = 1000;
-    const H = 410;
+    const steps = data.map(x => Number(x.step));
+    const losses = data.map(x => Number(x.train_loss));
 
-    const left = 65;
-    const right = 25;
-    const top = 25;
-    const bottom = 48;
-
-    const plotW =
-        W - left - right;
-
-    const plotH =
-        H - top - bottom;
-
-
-    const steps =
-        data.map(
-            x => Number(x.step)
-        );
-
-    const losses =
-        data.map(
-            x => Number(x.train_loss)
-        );
-
-
-    let minStep =
-        Math.min(...steps);
-
-    let maxStep =
-        Math.max(...steps);
-
-    let minLoss =
-        Math.min(...losses);
-
-    let maxLoss =
-        Math.max(...losses);
-
+    let minStep = Math.min(...steps);
+    let maxStep = Math.max(...steps);
+    let minLoss = Math.min(...losses);
+    let maxLoss = Math.max(...losses);
 
     if (minStep === maxStep) {
         minStep -= 1;
@@ -985,395 +841,205 @@ function drawGraph(history) {
         maxLoss += .5;
     }
 
-
-    const padding =
-        (maxLoss - minLoss) * .1;
-
+    const padding = (maxLoss - minLoss) * .1;
     minLoss -= padding;
     maxLoss += padding;
 
-
     function x(step) {
-
-        return (
-            left +
-            (
-                (step - minStep) /
-                (maxStep - minStep)
-            ) *
-            plotW
-        );
-
+        return left + ((step - minStep) / (maxStep - minStep)) * plotW;
     }
-
 
     function y(value) {
-
-        return (
-            top +
-            (
-                1 -
-                (
-                    (value - minLoss) /
-                    (maxLoss - minLoss)
-                )
-            ) *
-            plotH
-        );
-
+        return top + (1 - ((value - minLoss) / (maxLoss - minLoss))) * plotH;
     }
 
-
-    /*
-    Grid
-    */
-
     for (let i = 0; i <= 5; i++) {
+        const ratio = i / 5;
+        const yy = top + ratio * plotH;
 
-        const ratio =
-            i / 5;
+        const gridLine = document.createElementNS("http://www.w3.org/2000/svg","line");
 
-        const yy =
-            top +
-            ratio * plotH;
-
-
-        const gridLine =
-            document.createElementNS(
-                "http://www.w3.org/2000/svg",
-                "line"
-            );
-
-        gridLine.setAttribute(
-            "x1",
-            left
-        );
-
-        gridLine.setAttribute(
-            "x2",
-            W - right
-        );
-
-        gridLine.setAttribute(
-            "y1",
-            yy
-        );
-
-        gridLine.setAttribute(
-            "y2",
-            yy
-        );
-
-        gridLine.setAttribute(
-            "class",
-            "grid-line"
-        );
+        gridLine.setAttribute("x1",left);
+        gridLine.setAttribute("x2",W-right);
+        gridLine.setAttribute("y1",yy);
+        gridLine.setAttribute("y2",yy);
+        gridLine.setAttribute("class","grid-line");
 
         grid.appendChild(gridLine);
 
+        const label = document.createElementNS("http://www.w3.org/2000/svg","text");
 
-        const value =
-            maxLoss -
-            ratio *
-            (maxLoss - minLoss);
+        label.setAttribute("x",left-10);
+        label.setAttribute("y",yy+4);
+        label.setAttribute("text-anchor","end");
+        label.setAttribute("class","axis-label");
 
-
-        const label =
-            document.createElementNS(
-                "http://www.w3.org/2000/svg",
-                "text"
-            );
-
-        label.setAttribute(
-            "x",
-            left - 10
-        );
-
-        label.setAttribute(
-            "y",
-            yy + 4
-        );
-
-        label.setAttribute(
-            "text-anchor",
-            "end"
-        );
-
-        label.setAttribute(
-            "class",
-            "axis-label"
-        );
-
-        label.textContent =
-            value.toFixed(2);
+        label.textContent = (maxLoss - ratio * (maxLoss-minLoss)).toFixed(2);
 
         labels.appendChild(label);
     }
 
+    const path = data.map((point,i) => {
+        return (i === 0 ? "M" : "L") +
+            " " + x(Number(point.step)) +
+            " " + y(Number(point.train_loss));
+    }).join(" ");
 
-    /*
-    Loss line
-    */
+    const pathElement = document.createElementNS("http://www.w3.org/2000/svg","path");
 
-    const path =
-        data.map(
-            (point, i) => {
-
-                const command =
-                    i === 0
-                        ? "M"
-                        : "L";
-
-                return (
-                    command +
-                    " " +
-                    x(Number(point.step)) +
-                    " " +
-                    y(Number(point.train_loss))
-                );
-            }
-        ).join(" ");
-
-
-    const pathElement =
-        document.createElementNS(
-            "http://www.w3.org/2000/svg",
-            "path"
-        );
-
-    pathElement.setAttribute(
-        "d",
-        path
-    );
-
-    pathElement.setAttribute(
-        "class",
-        "loss-line"
-    );
+    pathElement.setAttribute("d",path);
+    pathElement.setAttribute("class","loss-line");
 
     line.appendChild(pathElement);
 
-
-    /*
-    One dot for EVERY checkpoint.
-    */
-
     data.forEach(point => {
+        const circle = document.createElementNS("http://www.w3.org/2000/svg","circle");
 
-        const circle =
-            document.createElementNS(
-                "http://www.w3.org/2000/svg",
-                "circle"
-            );
+        circle.setAttribute("cx",x(Number(point.step)));
+        circle.setAttribute("cy",y(Number(point.train_loss)));
+        circle.setAttribute("r",5);
+        circle.setAttribute("class","loss-point");
 
-        circle.setAttribute(
-            "cx",
-            x(Number(point.step))
-        );
-
-        circle.setAttribute(
-            "cy",
-            y(Number(point.train_loss))
-        );
-
-        circle.setAttribute(
-            "r",
-            5
-        );
-
-        circle.setAttribute(
-            "class",
-            "loss-point"
-        );
-
-
-        /*
-        Native browser tooltip.
-        */
-
-        const tooltip =
-            document.createElementNS(
-                "http://www.w3.org/2000/svg",
-                "title"
-            );
+        const tooltip = document.createElementNS("http://www.w3.org/2000/svg","title");
 
         tooltip.textContent =
-            "Step " +
-            number(Number(point.step)) +
-            " • Loss " +
-            loss(Number(point.train_loss)) +
-            (
-                point.val_loss != null
-                    ? " • Val " +
-                      loss(Number(point.val_loss))
-                    : ""
-            );
+            "Step " + number(Number(point.step)) +
+            " • Loss " + loss(Number(point.train_loss)) +
+            (point.val_loss != null ? " • Val " + loss(Number(point.val_loss)) : "");
 
         circle.appendChild(tooltip);
-
         points.appendChild(circle);
     });
 
-
-    /*
-    X-axis labels.
-    */
-
-    const first =
-        data[0];
-
-    const last =
-        data[data.length - 1];
-
-
     function addXLabel(point) {
+        const label = document.createElementNS("http://www.w3.org/2000/svg","text");
 
-        const label =
-            document.createElementNS(
-                "http://www.w3.org/2000/svg",
-                "text"
-            );
-
-        label.setAttribute(
-            "x",
-            x(Number(point.step))
-        );
-
-        label.setAttribute(
-            "y",
-            H - 14
-        );
-
-        label.setAttribute(
-            "text-anchor",
-            "middle"
-        );
-
-        label.setAttribute(
-            "class",
-            "axis-label"
-        );
-
-        label.textContent =
-            compact(Number(point.step));
+        label.setAttribute("x",x(Number(point.step)));
+        label.setAttribute("y",H-14);
+        label.setAttribute("text-anchor","middle");
+        label.setAttribute("class","axis-label");
+        label.textContent = compact(Number(point.step));
 
         labels.appendChild(label);
     }
 
+    addXLabel(data[0]);
 
-    addXLabel(first);
-
-    if (last !== first)
-        addXLabel(last);
+    if (data.length > 1) addXLabel(data[data.length-1]);
 }
 
-
-/*
-============================================================
-NETWORK
-============================================================
-*/
+/* NETWORK */
 
 async function getJson(file) {
+    const response = await fetch(
+        DATA_URL + "/" + file + "?t=" + Date.now(),
+        {cache:"no-store"}
+    );
 
-    const response =
-        await fetch(
-            DATA_URL +
-            "/" +
-            file +
-            "?t=" +
-            Date.now(),
-            {
-                cache: "no-store"
-            }
-        );
-
-
-    if (!response.ok)
-        throw new Error(
-            "HTTP " +
-            response.status
-        );
-
+    if (!response.ok) throw new Error("HTTP " + response.status);
 
     return response.json();
 }
 
+let refreshing = false;
 
 async function refresh() {
+    if (refreshing) return;
+
+    refreshing = true;
+
+    const button = $("refreshButton");
+    button.textContent = "↻ Updating...";
+    button.disabled = true;
 
     try {
-
-        const [
-            status,
-            history
-        ] = await Promise.all([
+        const [status,history] = await Promise.all([
             getJson("status.json"),
             getJson("history.json")
         ]);
 
-
         updateStatus(status);
 
+        currentHistory = history.checkpoints || [];
         drawGraph(history);
 
+        $("status").classList.remove("error");
+        $("status").classList.add("live");
 
-        $("status")
-            .classList
-            .remove("error");
-
-        $("status")
-            .classList
-            .add("live");
-
-        $("statusText")
-            .textContent =
-            status.status === "completed"
-                ? "Completed"
-                : status.status === "paused"
-                    ? "Paused"
-                    : "Live";
-
+        $("statusText").textContent =
+            status.status === "completed" ? "Completed" :
+            status.status === "paused" ? "Paused" : "Live";
 
     } catch (error) {
+        console.error("Tracker update failed:",error);
 
-        console.error(
-            "Tracker update failed:",
-            error
-        );
+        $("status").classList.remove("live");
+        $("status").classList.add("error");
+        $("statusText").textContent = "Offline";
 
-
-        $("status")
-            .classList
-            .remove("live");
-
-        $("status")
-            .classList
-            .add("error");
-
-        $("statusText")
-            .textContent =
-            "Offline";
-
-        $("footer")
-            .textContent =
+        $("footer").textContent =
             "Unable to reach training telemetry";
+
+        $("detailsStatus").textContent = "Connection error";
+
+    } finally {
+        refreshing = false;
+        button.textContent = "↻ Refresh";
+        button.disabled = false;
     }
 }
 
+/* NAVIGATION */
 
-/*
-Initial load + live updates.
-*/
+document.querySelectorAll(".nav-button[data-target]").forEach(button => {
+    button.addEventListener("click",() => {
+        document.querySelectorAll(".nav-button").forEach(b =>
+            b.classList.remove("active")
+        );
+
+        button.classList.add("active");
+
+        const target = $(button.dataset.target);
+
+        if (target) {
+            target.scrollIntoView({behavior:"smooth",block:"start"});
+        }
+    });
+});
+
+/* GRAPH FILTERS */
+
+document.querySelectorAll(".chart-button").forEach(button => {
+    button.addEventListener("click",() => {
+        document.querySelectorAll(".chart-button").forEach(b =>
+            b.classList.remove("active")
+        );
+
+        button.classList.add("active");
+        currentRange = button.dataset.range;
+
+        drawGraph({checkpoints:currentHistory});
+    });
+});
+
+/* DETAILS */
+
+$("detailsButton").addEventListener("click",() => {
+    const panel = $("detailsPanel");
+    panel.classList.toggle("open");
+
+    $("detailsButton").classList.toggle("active");
+
+    if (panel.classList.contains("open")) {
+        panel.scrollIntoView({behavior:"smooth",block:"nearest"});
+    }
+});
+
+/* START */
 
 refresh();
-
-setInterval(
-    refresh,
-    REFRESH_MS
-);
+setInterval(refresh,REFRESH_MS);
 
 </script>
-
 </body>
 </html>
